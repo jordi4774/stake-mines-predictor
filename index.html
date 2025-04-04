@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stake Mines Predictor</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(5, 60px); gap: 5px; justify-content: center; margin-top: 20px; }
+        .tile { width: 60px; height: 60px; background: gray; border: 1px solid black; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .safe { background: green !important; }
+        .mine { background: red !important; }
+        .predict { border: 3px solid yellow !important; }
+    </style>
+</head>
+<body>
+    <h1>Stake Mines Predictor</h1>
+    <p>Tap a tile to reveal. AI will predict safe spots.</p>
+    <div class="grid" id="gameGrid"></div>
+    <button onclick="predictSafeMove()">Predict Safe Tile</button><script>
+    const grid = document.getElementById("gameGrid");
+    const tileCount = 25; // 5x5 grid
+    let mineCount = 3; // Adjust based on game
+    let tileData = new Array(tileCount).fill(0); // Probability tracking
+    let mines = new Set();
+
+    // Generate Mines
+    while (mines.size < mineCount) {
+        mines.add(Math.floor(Math.random() * tileCount));
+    }
+
+    // Create Tiles
+    for (let i = 0; i < tileCount; i++) {
+        let tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.dataset.index = i;
+        tile.addEventListener("click", () => revealTile(i, tile));
+        grid.appendChild(tile);
+    }
+
+    // Reveal Tile Logic
+    function revealTile(index, tile) {
+        if (mines.has(index)) {
+            tile.classList.add("mine");
+            alert("Mine hit! Game over.");
+        } else {
+            tile.classList.add("safe");
+            tileData[index] += 1;
+        }
+    }
+
+    // AI Prediction: Suggest Safest Tile
+    function predictSafeMove() {
+        let bestTile = tileData.indexOf(Math.max(...tileData));
+        document.querySelectorAll(".tile").forEach(tile => tile.classList.remove("predict"));
+        document.querySelectorAll(".tile")[bestTile].classList.add("predict");
+    }
+</script>
+
+</body>
+</html>
